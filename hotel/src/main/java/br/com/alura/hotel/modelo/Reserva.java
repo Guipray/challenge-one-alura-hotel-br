@@ -20,7 +20,7 @@ public class Reserva {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	@Column(name = "data_entrada")
-	private LocalDate dataEntranda;
+	private LocalDate dataEntrada;
 	@Column(name = "data_saida")
 	private LocalDate dataSaida;
 	private BigDecimal valor;
@@ -35,7 +35,7 @@ public class Reserva {
 
 	public Reserva(LocalDate dataEntranda, LocalDate dataSaida, BigDecimal valor, String formaPagamento,
 			Hospede hospede) {
-		this.dataEntranda = dataEntranda;
+		this.dataEntrada = dataEntranda;
 		this.dataSaida = dataSaida;
 		this.valor = valor;
 		this.formaPagamento = formaPagamento;
@@ -51,11 +51,11 @@ public class Reserva {
 	}
 
 	public LocalDate getDataEntranda() {
-		return dataEntranda;
+		return dataEntrada;
 	}
 
 	public void setDataEntranda(LocalDate dataEntranda) {
-		this.dataEntranda = dataEntranda;
+		this.dataEntrada = dataEntranda;
 	}
 
 	public LocalDate getDataSaida() {
