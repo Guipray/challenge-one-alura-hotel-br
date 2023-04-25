@@ -80,7 +80,16 @@ public class Sucesso extends JDialog {
 				JButton cancelButton = new JButton("Cancel");
 				cancelButton.setActionCommand("Cancel");
 				buttonPane.add(cancelButton);
+				cancelButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						dispose();//serve para fechar a janela atual
+						MenuUsuario usuario = new MenuUsuario(); 
+						usuario.setVisible(true);
+					}
+				});
+				
 			}
+			
 		}
 	}
 

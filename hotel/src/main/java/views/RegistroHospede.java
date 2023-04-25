@@ -93,9 +93,10 @@ public class RegistroHospede extends JFrame {
 		btnexit.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				MenuPrincipal principal = new MenuPrincipal();
-				principal.setVisible(true);
-				dispose();
+				int opcao = JOptionPane.showConfirmDialog(null, "Deseja sair da aplicação?");
+				if (opcao == 0) {
+					System.exit(0);
+				}
 			}
 			@Override
 			public void mouseEntered(MouseEvent e) {

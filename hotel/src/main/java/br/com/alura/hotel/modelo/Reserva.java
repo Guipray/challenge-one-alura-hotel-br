@@ -33,13 +33,11 @@ public class Reserva {
 	public Reserva() {
 	}
 
-	public Reserva(LocalDate dataEntranda, LocalDate dataSaida, BigDecimal valor, String formaPagamento,
-			Hospede hospede) {
+	public Reserva(LocalDate dataEntranda, LocalDate dataSaida, BigDecimal valor, String formaPagamento) {
 		this.dataEntrada = dataEntranda;
 		this.dataSaida = dataSaida;
 		this.valor = valor;
 		this.formaPagamento = formaPagamento;
-		this.hospede = hospede;
 	}
 
 	public Long getId() {
