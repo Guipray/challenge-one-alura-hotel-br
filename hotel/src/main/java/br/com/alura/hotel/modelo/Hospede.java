@@ -25,7 +25,7 @@ public class Hospede {
 	private String nacionalidade;
 	private String telefone;
 	
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne
 	private Reserva reserva;
 	
 	public Hospede() {

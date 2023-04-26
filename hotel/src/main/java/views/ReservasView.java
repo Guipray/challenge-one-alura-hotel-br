@@ -159,8 +159,10 @@ public class ReservasView extends JFrame {
 						long diferancaEmMilissegundos = dataS.getTime() - dataE.getTime();
 						int quantidadeDias = (int) (diferancaEmMilissegundos / 86400000);
 						if (quantidadeDias > 0) {
+							System.out.println(quantidadeDias);
 							double valorDaReserva = quantidadeDias * 20.0;
-							txtValor.setText(String.format("%.2f", valorDaReserva));
+							System.out.println(valorDaReserva);
+							txtValor.setText(String.valueOf(valorDaReserva));
 						} else {
 							JOptionPane.showMessageDialog(null, "Reserva indisponível. Tente novamente!");
 						}
@@ -198,7 +200,7 @@ public class ReservasView extends JFrame {
 		txtFormaPagamento.setBackground(SystemColor.text);
 		txtFormaPagamento.setBorder(new LineBorder(new Color(255, 255, 255), 1, true));
 		txtFormaPagamento.setFont(new Font("Roboto", Font.PLAIN, 16));
-		txtFormaPagamento.setModel(new DefaultComboBoxModel(new String[] {"CartÃ£o de CrÃ©dito", "CartÃ£o de DÃ©bito", "Boleto"}));
+		txtFormaPagamento.setModel(new DefaultComboBoxModel(new String[] {"Cartão de Crédito", "Cartão de Débito", "Boleto"}));
 		panel.add(txtFormaPagamento);
 		
 		JLabel lblFormaPago = new JLabel("FORMA DE PAGAMENTO");
@@ -234,7 +236,7 @@ public class ReservasView extends JFrame {
 		btnexit.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				int opcao = JOptionPane.showConfirmDialog(null, "Deseja sair da aplicaÃ§Ã£o?");
+				int opcao = JOptionPane.showConfirmDialog(null, "Deseja sair da aplicação?");
 				if (opcao == 0) {
 					System.exit(0);
 				}
@@ -332,7 +334,7 @@ public class ReservasView extends JFrame {
 					int anoSaida = txtDataS.getDate().getYear() + 1900;
 					LocalDate dataSaida = LocalDate.of(anoSaida, mesSaida, diaSaida);
 					
-					String valorEmString = txtValor.getText().replace(",", ".");
+					String valorEmString = txtValor.getText();
 					
 					BigDecimal valorDaReserva = new BigDecimal(valorEmString);
 					
@@ -346,12 +348,17 @@ public class ReservasView extends JFrame {
 					em.getTransaction().begin();
 					
 					reservaDao.cadastrar(reserva);
+					Long idDaReserva = reserva.getId();
 					
 					em.getTransaction().commit();
 					em.close();
 					
+					JOptionPane.showMessageDialog(null, "Reserva criada com sucesso!");
+					
 					RegistroHospede registro = new RegistroHospede();
+					registro.setIdDaReserva(idDaReserva);
 					registro.setVisible(true);
+					dispose();
 				} else {
 					JOptionPane.showMessageDialog(null, "Deve preencher todos os campos.");
 				}
@@ -363,7 +370,7 @@ public class ReservasView extends JFrame {
 		panel.add(btnProximo);
 		btnProximo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 		
-		JLabel lblSeguinte = new JLabel("PRÃ“XIMO");
+		JLabel lblSeguinte = new JLabel("PRÓXIMO");
 		lblSeguinte.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSeguinte.setForeground(Color.WHITE);
 		lblSeguinte.setFont(new Font("Roboto", Font.PLAIN, 18));
