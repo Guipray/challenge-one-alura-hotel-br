@@ -7,6 +7,8 @@ import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import br.com.alura.hotel.controller.HospedeController;
+import br.com.alura.hotel.controller.ReservaController;
 import br.com.alura.hotel.dao.HospedeDao;
 import br.com.alura.hotel.dao.ReservaDao;
 import br.com.alura.hotel.modelo.Hospede;
@@ -22,6 +24,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
+import java.awt.Point;
+
 import javax.swing.JTabbedPane;
 import java.awt.Toolkit;
 import javax.swing.SwingConstants;
@@ -29,6 +33,7 @@ import javax.swing.JSeparator;
 import javax.swing.ListSelectionModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.util.List;
 
@@ -43,6 +48,10 @@ public class Buscar extends JFrame {
 	private DefaultTableModel modeloHospedes;
 	private JLabel labelAtras;
 	private JLabel labelExit;
+	private HospedeController hospedeController;
+	private ReservaController reservaController;
+	int linhaHospedeSelecionada;
+	int linhaReservaSelecionada;
 	int xMouse, yMouse;
 
 	/**
@@ -65,6 +74,10 @@ public class Buscar extends JFrame {
 	 * Create the frame.
 	 */
 	public Buscar() {
+		
+		this.hospedeController = new HospedeController();
+		this.reservaController = new ReservaController();
+		
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Buscar.class.getResource("/imagenes/lOGO-50PX.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 910, 571);
@@ -241,15 +254,8 @@ public class Buscar extends JFrame {
 					}
 				}
 
-				EntityManager em = JPAUtil.getEntityManager();
-
-				ReservaDao reservaDao = new ReservaDao(em);
-				HospedeDao hospedeDao = new HospedeDao(em);
-
-				em.getTransaction().begin();
-
 				if (sobrenome != null) {
-					List<Hospede> hospedes = hospedeDao.buscarPorParametros(null, sobrenome, null, null, null);
+					List<Hospede> hospedes = hospedeController.buscarPorParametros(null, sobrenome, null, null, null);
 					if (!hospedes.isEmpty()) {
 						for (Hospede hospede : hospedes) {
 							Object[] linhaHospede = { hospede.getId(), hospede.getNome(), hospede.getSobrenome(),
@@ -267,7 +273,7 @@ public class Buscar extends JFrame {
 
 				} else if (id != null) {
 					try {
-						Reserva reservasPorId = reservaDao.buscarPorId(id);
+						Reserva reservasPorId = reservaController.buscarPorId(id);
 						Object[] linhaReservas = { reservasPorId.getId(), reservasPorId.getDataEntranda(),
 								reservasPorId.getDataSaida(), reservasPorId.getValor(),
 								reservasPorId.getFormaPagamento() };
@@ -284,11 +290,8 @@ public class Buscar extends JFrame {
 					}
 
 				} else {
-					JOptionPane.showMessageDialog(null, "Busque pelo id da Reserva ou sobrenome do Hóspede!");
+					JOptionPane.showMessageDialog(null, "Busque pelo id da Reserva ou sobrenome do Hóspede!\nEvite usar acentos!");
 				}
-
-				em.getTransaction().commit();
-				em.close();
 
 			}
 		});
@@ -306,6 +309,14 @@ public class Buscar extends JFrame {
 		lblBuscar.setFont(new Font("Roboto", Font.PLAIN, 18));
 
 		JPanel btnEditar = new JPanel();
+		btnEditar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JTable table = (JTable) e.getSource();
+				System.out.println(table);
+			}
+
+		});
 		btnEditar.setLayout(null);
 		btnEditar.setBackground(new Color(12, 138, 199));
 		btnEditar.setBounds(635, 508, 122, 35);
@@ -320,6 +331,51 @@ public class Buscar extends JFrame {
 		btnEditar.add(lblEditar);
 
 		JPanel btnDeletar = new JPanel();
+		btnDeletar.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+
+				int linhaReservaSelecionada = tbReservas.getSelectedRow();
+				if (linhaReservaSelecionada != -1) {
+					Object id = tbReservas.getValueAt(linhaReservaSelecionada, 0);
+					Reserva reserva = reservaController.buscarPorId((Long) id);
+					Hospede hospede = reserva.getHospede();
+					
+					reservaController.remover(reserva);
+					
+					modelo.removeRow(linhaReservaSelecionada);
+					for (int i = 0; i < tbHospedes.getRowCount(); i++) {
+						if (tbHospedes.getValueAt(i, 6) == id) {
+							modeloHospedes.removeRow(i);
+							JOptionPane.showMessageDialog(null, "Reserva removida com sucesso!");
+						}
+					}
+				}
+
+				int linhaHospedeSelecionada = tbHospedes.getSelectedRow();
+				if (linhaHospedeSelecionada != -1) {
+					Object id = tbHospedes.getValueAt(linhaHospedeSelecionada, 6);
+					Hospede hospede = hospedeController.buscarPorIdDaReserva((Long) id);
+					Reserva reserva = reservaController.buscarPorId((Long) id);
+					
+					reservaController.remover(reserva);
+					
+					modeloHospedes.removeRow(linhaHospedeSelecionada);
+					for (int i = 0; i < tbReservas.getRowCount(); i++) {
+						if (tbReservas.getValueAt(i, 0) == id) {
+							modelo.removeRow(i);
+							JOptionPane.showMessageDialog(null, "Hóspede removido com sucesso!");
+						}
+					}
+				}
+
+				linhaHospedeSelecionada = -1;
+				linhaReservaSelecionada = -1;
+				
+			}
+
+		});
+
 		btnDeletar.setLayout(null);
 		btnDeletar.setBackground(new Color(12, 138, 199));
 		btnDeletar.setBounds(767, 508, 122, 35);
@@ -333,6 +389,7 @@ public class Buscar extends JFrame {
 		lblExcluir.setBounds(0, 0, 122, 35);
 		btnDeletar.add(lblExcluir);
 		setResizable(false);
+
 	}
 
 	// Código que permite movimentar a janela pela tela seguindo a posição de "x" e
@@ -347,4 +404,5 @@ public class Buscar extends JFrame {
 		int y = evt.getYOnScreen();
 		this.setLocation(x - xMouse, y - yMouse);
 	}
+
 }

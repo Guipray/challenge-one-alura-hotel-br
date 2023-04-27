@@ -8,6 +8,8 @@ import javax.swing.JTextField;
 import java.awt.Color;
 import com.toedter.calendar.JDateChooser;
 
+import br.com.alura.hotel.controller.HospedeController;
+import br.com.alura.hotel.controller.ReservaController;
 import br.com.alura.hotel.dao.HospedeDao;
 import br.com.alura.hotel.dao.ReservaDao;
 import br.com.alura.hotel.modelo.Hospede;
@@ -47,6 +49,8 @@ public class RegistroHospede extends JFrame {
 	private JLabel labelExit;
 	private JLabel labelAtras;
 	int xMouse, yMouse;
+	private HospedeController hospedeController;
+	private ReservaController reservaController;
 
 	/**
 	 * Launch the application.
@@ -68,6 +72,9 @@ public class RegistroHospede extends JFrame {
 	 * Create the frame.
 	 */
 	public RegistroHospede() {
+		
+		this.hospedeController = new HospedeController();
+		this.reservaController = new ReservaController();
 
 		setIconImage(
 				Toolkit.getDefaultToolkit().getImage(RegistroHospede.class.getResource("/imagenes/lOGO-50PX.png")));
@@ -340,25 +347,15 @@ public class RegistroHospede extends JFrame {
 
 					Long idReserva = Long.valueOf(txtNreserva.getText());
 
-					EntityManager em = JPAUtil.getEntityManager();
-
-					HospedeDao hospedeDao = new HospedeDao(em);
-					ReservaDao reservaDao = new ReservaDao(em);
 					Hospede hospede = new Hospede(nome, sobrenome, dataNascimento, nacionalidade, telefone);
 
-					em.getTransaction().begin();
-
-					hospedeDao.cadastrar(hospede);
-					Reserva reserva = reservaDao.buscarPorId(idReserva);
+					hospedeController.cadastrar(hospede);
+					Reserva reserva = reservaController.buscarPorId(idReserva);
 					hospede.setReserva(reserva);
-					hospedeDao.atualizar(hospede);
+					hospedeController.atualizar(hospede);
 					reserva.setHospede(hospede);
-					reservaDao.atualizar(reserva);
-					System.out.println(reserva.getHospede().getId());
+					reservaController.atualizar(reserva);
 
-					em.getTransaction().commit();
-					em.close();
-					
 					Sucesso sucesso = new Sucesso();
 					sucesso.setVisible(true);
 					dispose();

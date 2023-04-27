@@ -17,15 +17,21 @@ public class HospedeDao {
 	}
 	
 	public void cadastrar(Hospede hospede) {
+		this.em.getTransaction().begin();
 		this.em.persist(hospede);
+		this.em.getTransaction().commit();
 	}
 	
 	public void atualizar(Hospede hospede) {
+		this.em.getTransaction().begin();
 		this.em.merge(hospede);
+		this.em.getTransaction().commit();
 	}
 	
 	public void remover(Hospede hospede) {
-		this.remover(hospede);
+		this.em.getTransaction().begin();
+		this.em.remove(hospede);
+		this.em.getTransaction().commit();
 	}
 	
 	public Hospede buscarPorId(Long id) {

@@ -12,6 +12,8 @@ import java.awt.Color;
 import javax.swing.JTextField;
 import com.toedter.calendar.JDateChooser;
 
+import br.com.alura.hotel.controller.HospedeController;
+import br.com.alura.hotel.controller.ReservaController;
 import br.com.alura.hotel.dao.ReservaDao;
 import br.com.alura.hotel.modelo.Reserva;
 import br.com.alura.hotel.util.JPAUtil;
@@ -47,6 +49,8 @@ public class ReservasView extends JFrame {
 	private JLabel labelExit;
 	private JLabel lblValorSimbolo; 
 	private JLabel labelAtras;
+	private HospedeController hospedeController;
+	private ReservaController reservaController;
 
 	/**
 	 * Launch the application.
@@ -69,6 +73,10 @@ public class ReservasView extends JFrame {
 	 */
 	public ReservasView() {
 		super("Reserva");
+		
+		this.hospedeController = new HospedeController();
+		this.reservaController = new ReservaController();
+		
 		setIconImage(Toolkit.getDefaultToolkit().getImage(ReservasView.class.getResource("/imagenes/aH-40px.png")));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 910, 560);
@@ -159,9 +167,7 @@ public class ReservasView extends JFrame {
 						long diferancaEmMilissegundos = dataS.getTime() - dataE.getTime();
 						int quantidadeDias = (int) (diferancaEmMilissegundos / 86400000);
 						if (quantidadeDias > 0) {
-							System.out.println(quantidadeDias);
 							double valorDaReserva = quantidadeDias * 20.0;
-							System.out.println(valorDaReserva);
 							txtValor.setText(String.valueOf(valorDaReserva));
 						} else {
 							JOptionPane.showMessageDialog(null, "Reserva indisponível. Tente novamente!");
@@ -340,18 +346,10 @@ public class ReservasView extends JFrame {
 					
 					String formaPagamento = (String) txtFormaPagamento.getSelectedItem();
 					
-					EntityManager em = JPAUtil.getEntityManager();
-					
-					ReservaDao reservaDao = new ReservaDao(em);
 					Reserva reserva = new Reserva(dataEntrada, dataSaida, valorDaReserva, formaPagamento);
 					
-					em.getTransaction().begin();
-					
-					reservaDao.cadastrar(reserva);
+					reservaController.cadastrar(reserva);
 					Long idDaReserva = reserva.getId();
-					
-					em.getTransaction().commit();
-					em.close();
 					
 					JOptionPane.showMessageDialog(null, "Reserva criada com sucesso!");
 					

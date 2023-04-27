@@ -18,15 +18,21 @@ public class ReservaDao {
 	}
 
 	public void cadastrar(Reserva reserva) {
+		this.em.getTransaction().begin();
 		this.em.persist(reserva);
+		this.em.getTransaction().commit();
 	}
 
 	public void atualizar(Reserva reserva) {
+		this.em.getTransaction().begin();
 		this.em.merge(reserva);
+		this.em.getTransaction().commit();
 	}
 
 	public void remover(Reserva reserva) {
-		this.remover(reserva);
+		this.em.getTransaction().begin();
+		this.em.remove(reserva);
+		this.em.getTransaction().commit();
 	}
 
 	public Reserva buscarPorId(Long id) {

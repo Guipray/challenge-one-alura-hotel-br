@@ -3,6 +3,7 @@ package br.com.alura.hotel.modelo;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -27,7 +28,7 @@ public class Reserva {
 	@Column(name = "forma_pagamento")
 	private String formaPagamento;
 	
-	@OneToOne(mappedBy = "reserva", fetch = FetchType.LAZY)
+	@OneToOne(mappedBy = "reserva", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Hospede hospede;
 	
 	public Reserva() {
