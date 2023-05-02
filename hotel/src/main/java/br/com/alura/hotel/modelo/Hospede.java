@@ -2,6 +2,7 @@ package br.com.alura.hotel.modelo;
 
 import java.time.LocalDate;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -25,7 +26,7 @@ public class Hospede {
 	private String nacionalidade;
 	private String telefone;
 	
-	@OneToOne()
+	@OneToOne
 	private Reserva reserva;
 	
 	public Hospede() {
